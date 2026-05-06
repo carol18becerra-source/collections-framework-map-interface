@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class App {
@@ -44,10 +46,23 @@ public class App {
 
 		/* Creacion del mapa a partir del listado de argumentos */
 
-		Map<String, Long> m = listadoDeArgumentos.stream()
-				.collect(Collectors.groupingBy(nombre -> nombre, 
-						Collectors.counting()));
-		System.out.println("Mapa resultante: " + m);
+		Map<String, Long> m = null;
+
+		/*
+		 * variante #1 de creacion de mapa a partir de recorrer el listado de argumentos
+		 * utilizando Operaciones de agregado (tuberia, metodos de clase stream, lambda,
+		 * metodos por referencia, en fin programacion funcional)
+		 */
+
+		m = listadoDeArgumentos.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+		System.out.println(m);
+		
+		/*variante #2 (Recomendado) */
+		
+		var m2 = listadoDeArgumentos.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+		System.out.println(m);
 
 	}
 }
