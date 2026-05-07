@@ -71,9 +71,9 @@ public class App {
 
 		/*-------------------------------------------------------------------------------------------------------------------------------------*/
 
-		/* Creacion de listado de empleados, estudiantes y personas tambien*/
+		/* Creacion de listado de empleados, estudiantes y personas tambien */
 
-		List<? extends Persona> listadoGenerico = new ArrayList<>();
+		List<? super Persona> listadoGenerico = new ArrayList<>();
 
 		Empleado emp1 = Empleado.builder().nombre("Jorge Francisco").primerApellido("Alborch").SegundoApellido("Villar")
 				.genero(Genero.HOMBRE).fechaNacimiento(LocalDate.of(1973, Month.JUNE, 23)).dpto(Dpto.INFORMATICA)
@@ -113,21 +113,31 @@ public class App {
 				.genero(Genero.HOMBRE).fechaNacimiento(LocalDate.of(1995, Month.MAY, 20)).dpto(Dpto.RRHH)
 				.salario(new BigDecimal("3500.50")).fechaAlta(LocalDate.of(2015, Month.SEPTEMBER, 22)).build();
 
-		
-		Estudiante estudiante1 = Estudiante.builder()
-				.nombre("Alex Eduardo")
-				.primerApellido("Pilicita")
-				.SegundoApellido("Changoluisa")
-				.genero(Genero.HOMBRE)
-				.fechaNacimiento(LocalDate.of(1991, Month.MAY, 25))
-				.totalAsignaturas(10)
-				.facultad(Facultad.INGENIERIA)
-				.fechaAltaFacultad(LocalDate.of(2020, Month.JANUARY, 6))
-				.build();
-		//empleados = Arrays.asList(emp1, emp2, emp3, emp4, emp5, emp6, emp7, emp8, emp9, emp10);
-		
-		listadoGenerico = Arrays.asList(emp1, emp2, emp3, emp4, emp5, emp6, emp7, emp8, emp9, emp10, estudiante1);
-		
+		Estudiante estudiante1 = Estudiante.builder().nombre("Alex Eduardo").primerApellido("Pilicita")
+				.SegundoApellido("Changoluisa").genero(Genero.HOMBRE).fechaNacimiento(LocalDate.of(1991, Month.MAY, 25))
+				.totalAsignaturas(10).facultad(Facultad.INGENIERIA)
+				.fechaAltaFacultad(LocalDate.of(2020, Month.JANUARY, 6)).build();
+		// empleados = Arrays.asList(emp1, emp2, emp3, emp4, emp5, emp6, emp7, emp8,
+		// emp9, emp10);
+
+//		listadoGenerico = Arrays.asList(emp1, emp2, emp3, emp4, emp5, emp6, emp7, emp8, emp9, emp10, estudiante1);
+
+		listadoGenerico.add(emp1);
+
+		listadoGenerico.add(emp2);
+		listadoGenerico.add(emp3);
+
+		listadoGenerico.add(emp4);
+		listadoGenerico.add(emp5);
+
+		listadoGenerico.add(emp6);
+		listadoGenerico.add(emp7);
+
+		listadoGenerico.add(emp8);
+		listadoGenerico.add(emp9);
+
+		listadoGenerico.add(emp10);
+		listadoGenerico.add(estudiante1);
 
 		/* Crear una coleccion que agrupe empleados por genero */
 
@@ -143,14 +153,10 @@ public class App {
 		 * concretamente, en este caso, el Collectors.toList() sobra.
 		 */
 
-		Map<Genero, List<Empleado>> empleadosPorGenero = listadoGenerico.stream()
-				.filter(obj -> obj instanceof Empleado)
-				.map(obj -> (Empleado) obj)
-				.collect(Collectors.groupingBy(Empleado::getGenero));
+		Map<Genero, List<Empleado>> empleadosPorGenero = listadoGenerico.stream().filter(obj -> obj instanceof Empleado)
+				.map(obj -> (Empleado) obj).collect(Collectors.groupingBy(Empleado::getGenero));
 
-
-
-				System.out.println("Empleados por Genero: " + empleadosPorGenero);
+		System.out.println("Empleados por Genero: " + empleadosPorGenero);
 
 	}
 }
