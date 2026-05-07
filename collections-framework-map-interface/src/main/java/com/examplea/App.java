@@ -3,15 +3,16 @@ package com.examplea;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 public class App {
 	public static void main(String[] args) {
@@ -90,14 +91,14 @@ public class App {
 				.salario(new BigDecimal(3700.50)).fechaAlta(LocalDate.of(1020, Month.SEPTEMBER, 10)).build();
 
 		Empleado emp5 = Empleado.builder().nombre("Mariana").primerApellido("Garzon").SegundoApellido("Villar")
-				.genero(Genero.MUJER).fechaNacimiento(LocalDate.of(2000, Month.AUGUST, 4)).dpto(Dpto.FINANZAS)
+				.genero(Genero.MUJER).fechaNacimiento(LocalDate.of(2001, Month.JUNE, 7)).dpto(Dpto.FINANZAS)
 				.salario(new BigDecimal(3300.50)).fechaAlta(LocalDate.of(2022, Month.SEPTEMBER, 25)).build();
 
-		Empleado emp6 = Empleado.builder().nombre(" Francisca").primerApellido("Alvarez").SegundoApellido("Gonzalez")
+		Empleado emp6 = Empleado.builder().nombre("Mariana").primerApellido("Alvarez").SegundoApellido("Gonzalez")
 				.genero(Genero.MUJER).fechaNacimiento(LocalDate.of(1995, Month.DECEMBER, 10)).dpto(Dpto.RRHH)
 				.salario(new BigDecimal(2500.50)).fechaAlta(LocalDate.of(2010, Month.SEPTEMBER, 5)).build();
 
-		Empleado emp7 = Empleado.builder().nombre("Maricarmen").primerApellido("Becerra").SegundoApellido("Mtnez")
+		Empleado emp7 = Empleado.builder().nombre("Mariana").primerApellido("Becerra").SegundoApellido("Mtnez")
 				.genero(Genero.MUJER).fechaNacimiento(LocalDate.of(2003, Month.FEBRUARY, 14)).dpto(Dpto.FINANZAS)
 				.salario(new BigDecimal(2600.50)).fechaAlta(LocalDate.of(2021, Month.SEPTEMBER, 8)).build();
 
@@ -153,10 +154,62 @@ public class App {
 		 * concretamente, en este caso, el Collectors.toList() sobra.
 		 */
 
-		Map<Genero, List<Empleado>> empleadosPorGenero = listadoGenerico.stream().filter(obj -> obj instanceof Empleado)
-				.map(obj -> (Empleado) obj).collect(Collectors.groupingBy(Empleado::getGenero));
+		Map<Genero, List<Empleado>> empleadosPorGenero = listadoGenerico.stream()
+				.filter(objeto -> objeto instanceof Empleado).map(obj -> (Empleado) obj)
+				.collect(Collectors.groupingBy(Empleado::getGenero));
 
 		System.out.println("Empleados por Genero: " + empleadosPorGenero);
 
+		/* Obtener una colleccion que agrupe empleados por Dpto y Genero */
+
+		Map<Dpto, Map<Genero, List<Empleado>>> empledosPorDptoYGenero = listadoGenerico.stream()
+				.filter(o -> o instanceof Empleado).map(o -> (Empleado) o)
+				.collect(Collectors.groupingBy(Empleado::getDpto, Collectors.groupingBy(Empleado::getGenero)));
+
+		/*
+		 * Obtener una coleccion que agrupe nombres de empleados por genero sin que se
+		 * dupliquen los nombres
+		 */
+
+		Map<Genero, Set<String>> NombresPorGenero = listadoGenerico.stream().filter(o -> o instanceof Empleado)
+				.map(o -> (Empleado) o).collect(Collectors.groupingBy(Empleado::getGenero,
+						Collectors.mapping(Empleado::getNombre, Collectors.toSet())));
+
+		System.out.println(NombresPorGenero);
+
+		/*
+		 * obtener uan coleccion que agrupe nombres de empleados separados por comas,
+		 * por edad del empleado
+		 */
+
+		Map<Long, String> nombresPorEdad = listadoGenerico.stream().filter(o -> o instanceof Empleado)
+				.map(o -> (Empleado) o)
+				.collect(Collectors.groupingBy(
+						empleado -> ChronoUnit.YEARS.between(empleado.getFechaNacimiento(), LocalDate.now()),
+						Collectors.mapping(Empleado::getNombre, Collectors.joining(","))));
+
+			System.out.println(nombresPorEdad);
+			
+			/*Obtener una coleccion que agrupe salario promedio por fecha de alta solamente para los empleados del genero mujer  */
+			
+			Map<LocalDate,Map<Genero, Double>> salarioPromedioMujer = listadoGenerico.stream()
+				    .filter(o -> o instanceof Empleado emp && emp.getGenero() .equals(Genero.MUJER))
+				    .map(o -> (Empleado) o)
+				    .collect(groupingBy(
+				        Empleado::getFechaAlta, 
+				        groupingBy(Empleado::getGenero,
+				        averagingDouble(emp -> emp.getSalario().doubleValue()) 
+				    		)));
+			
+				    System.out.println(salarioPromedioMujer);
+				    
+				    
+				    
+				    
+				    
+				    
+				    
+				    
+				    
 	}
 }
