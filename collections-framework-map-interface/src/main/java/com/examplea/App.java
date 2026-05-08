@@ -277,13 +277,22 @@ public class App {
 		System.out.println("---------- Con OPERACIRACIONES DE AGREGADO ------------");
 
 		empledosPorDptoYGenero.entrySet().forEach(entry1 -> {
+			
+			Dpto dpto = entry1.getKey();
 
-			System.out.println("Del Dpto: " + entry1.getKey());
+			System.out.println("Del Dpto: " + dpto);
 			System.out.println("y del Genero: ");
-			entry1.getValue().entrySet().forEach(entry2 -> {
-				System.out.println("Del Genero: " + entry2.getKey());
+			
+			Map<Genero, List<Empleado>> mapaAnidado = entry1.getValue();
+			mapaAnidado.entrySet().forEach(entry2 -> {
+				
+				Genero genero = entry2.getKey();
+				
+				System.out.println("Del Genero: " + genero);
 				System.out.println("La lista de empleados ordenadas segun el orden natural de antiguedad");
-				entry2.getValue().stream().sorted().forEach(System.out::println);
+				
+				List<Empleado> empleados = entry2.getValue();
+				empleados.stream().sorted().forEach(System.out::println);
 
 			});
 
