@@ -1,11 +1,13 @@
 package com.examplea;
 
 import java.math.BigDecimal;
+import java.security.KeyStore.Entry;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -188,28 +190,74 @@ public class App {
 						empleado -> ChronoUnit.YEARS.between(empleado.getFechaNacimiento(), LocalDate.now()),
 						Collectors.mapping(Empleado::getNombre, Collectors.joining(","))));
 
-			System.out.println(nombresPorEdad);
+		System.out.println(nombresPorEdad);
+
+		/*
+		 * Obtener una coleccion que agrupe salario promedio por fecha de alta solamente
+		 * para los empleados del genero mujer
+		 */
+
+		Map<LocalDate, Map<Genero, Double>> salarioPromedioMujer = listadoGenerico.stream()
+				.filter(o -> o instanceof Empleado emp && emp.getGenero().equals(Genero.MUJER)).map(o -> (Empleado) o)
+				.collect(groupingBy(Empleado::getFechaAlta,
+						groupingBy(Empleado::getGenero, averagingDouble(emp -> emp.getSalario().doubleValue()))));
+
+		System.out.println(salarioPromedioMujer);
+
+		/*
+		 * Para recorer un mapa hay que utilizar una de las tres vistas de coleccion
+		 * existente (collection View), para especificar si queremos recorrer las claves
+		 * del mapa, los valores del mapa o todas las entradas del mapa incluyendo
+		 * claves y valores
+		 */
+
+		/*
+		 * Como ejemplo: (Primeramente utilizando for mejorado)
+		 * 
+		 * 
+		 * Recorrer el mapa m y mostrar solamente los valores que sean par
+		 */
+
+		for (Map.Entry<String, Long> entry : m.entrySet()) {
+
+			String k = entry.getKey();
+			Long v = entry.getValue();
+
+			if (v % 2 == 0) {
+				System.out.println(v);
+			}
+
+		}
+
+		/* Lo mismo pero con operaciones de agregado */
+
+		System.out.println("Recorriendo el mapa m con operaciones de agregados");
+
+		m.entrySet().forEach(entry -> {
+			if (entry.getValue() % 2 == 0) {
+				System.out.println(entry.getValue());
+			}
+		});
+
+		/*
+		 * Recorrer el mapa empledosPorDptoYGenero y mostrar los empleados ordenados
+		 * segun el orden natural por antiguedad, los mas antiguos primero
+		 */
+		
+		// primero con for mejorado 
+		
+		for ( Map.Entry<Dpto, Map<Genero,List<Empleado>>> entry1 : empledosPorDptoYGenero.entrySet()) {
 			
-			/*Obtener una coleccion que agrupe salario promedio por fecha de alta solamente para los empleados del genero mujer  */
+			Dpto k = entry1.getKey();
+			Map<Genero, List<Empleado>>	v = entry1.getValue();
 			
-			Map<LocalDate,Map<Genero, Double>> salarioPromedioMujer = listadoGenerico.stream()
-				    .filter(o -> o instanceof Empleado emp && emp.getGenero() .equals(Genero.MUJER))
-				    .map(o -> (Empleado) o)
-				    .collect(groupingBy(
-				        Empleado::getFechaAlta, 
-				        groupingBy(Empleado::getGenero,
-				        averagingDouble(emp -> emp.getSalario().doubleValue()) 
-				    		)));
+			for (Map.Entry<Genero, List<Empleado>> entry2 : v.entrySet()) {
+				
+				System.out.println("Del Dpto: " + k + ", y del genero: " + entry2.getKey());
+				System.out.println("Los empleados se muestran a continuacion: " );
+			}
 			
-				    System.out.println(salarioPromedioMujer);
-				    
-				    
-				    
-				    
-				    
-				    
-				    
-				    
-				    
+			
+		}
 	}
 }
